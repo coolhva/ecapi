@@ -1,5 +1,6 @@
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
+import datetime
 import os
 from flask import Flask, request, current_app
 from flask_sqlalchemy import SQLAlchemy
@@ -39,6 +40,9 @@ def create_app(config_class=Config):
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
 
+    # Register the template filter with the Jinja Environment
+    app.jinja_env.globals.update(string_datetime=string_datetime)
+
     if not app.debug and not app.testing:
         if app.config['MAIL_SERVER']:
             auth = None
@@ -75,5 +79,11 @@ def create_app(config_class=Config):
         app.logger.info('Ecapi startup')
 
     return app
+
+def string_datetime(value):
+    """Convert string in to datetime"""
+    if value is None:
+        return ""
+    return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
 
 from app import models

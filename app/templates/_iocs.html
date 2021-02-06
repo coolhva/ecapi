@@ -1,0 +1,31 @@
+<hr />
+<table id="ioctable" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Action</th>
+            <th>Expires</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for ioc in iocs %}
+        <tr>
+            <td>{{ ioc.iocBlackListId }}</td>
+            <td></td>
+            <td>{{ ioc.status }}</td>
+            <td>{{ ioc.emailDirection }}</td>
+            <td>{{ ioc.description }}</td>
+            <td>{{ ioc.iocType }}</td>
+            <td>{{ ioc.iocValue }}</td>
+            <td>{{ ioc.remediationAction }}</td>
+            <td>{{ moment(string_datetime(ioc.expiryDate)).format('MMM Do h:mm') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
