@@ -40,6 +40,7 @@
                     {% if current_user.is_anonymous %}
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
                     {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.domains') }}">Domains</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.edit_profile') }}">Profile</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
                     {% endif %}

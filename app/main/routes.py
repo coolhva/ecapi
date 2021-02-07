@@ -3,8 +3,8 @@ import time
 from flask import render_template, flash, redirect, url_for, request, jsonify, current_app
 from flask_login import current_user, login_required
 from app import db
-from app.main.forms import EditProfileForm, EmptyForm
-from app.models import User
+from app.main.forms import DomainForm, EditProfileForm, EmptyForm
+from app.models import User, Domain
 from app.main import bp
 from app.main import iocapi
 from app.main.iocapi import IOC
@@ -33,15 +33,38 @@ def edit_profile():
         form.clientnet_password.data = current_user.clientnet_password
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
+@bp.route('/domains', methods=['GET', 'POST'])
+@login_required
+def domains():
+    form = DomainForm()
+    if form.validate_on_submit():
+        domain = Domain(domainname=form.domainname.data, user_id=current_user.id)
+        db.session.add(domain)
+        db.session.commit()
+        flash('Domain has been added.')
+        return redirect(url_for('main.domains'))
+    return render_template('domains.html', title='Domains', form=form)
+        
+@bp.route('/domain/<domainname>/remove', methods=['GET'])
+@login_required
+def delete_domain(domainname):
+    domain = Domain.query.filter_by(domainname=domainname, user_id = current_user.id).first_or_404()
+    db.session.delete(domain)
+    db.session.commit()
+    flash('Domain has been removed.')
+    return redirect(url_for('main.domains'))
+
 @bp.route('/ioc')
 @login_required
 def ioc():
     return render_template('ioc.html', title='IOC')
 
-@bp.route('/ioc/download', methods=['POST'])
+@bp.route('/ioc/download/<domainname>', methods=['POST'])
 @login_required
-def ioc_download():
-    ioc_result = iocapi.DownloadIOC()
+def ioc_download(domainname):
+    if not domainname == 'global':
+        domain = Domain.query.filter_by(domainname=domainname, user_id = current_user.id).first_or_404()
+    ioc_result = iocapi.DownloadIOC(domainname)
     return jsonify({'html': ioc_result.html, 
                     'status_code': ioc_result.status_code, 
                     'error_message': ioc_result.error_message })

@@ -7,7 +7,7 @@ import time
 from flask import render_template, current_app
 from flask_login import current_user
 from app import db
-from app.models import User
+from app.models import User, Domain
 
 class ApiResult():
     def __init__(self, html='', status_code='', error_message=''):
@@ -17,8 +17,9 @@ class ApiResult():
 
 
 class IOC():
-    def __init__(self, iocBlackListId='', iocType='', iocValue='', description='',
+    def __init__(self, iocDomain='', iocBlackListId='', iocType='', iocValue='', description='',
                  emailDirection='', remediationAction='', status='', expiryDate=''):
+        self.iocDomain = iocDomain,
         self.iocBlackListId = iocBlackListId
         self.iocType = iocType
         self.iocValue = iocValue
@@ -29,12 +30,12 @@ class IOC():
         self.expiryDate = expiryDate
 
 
-def DownloadIOC():
+def DownloadIOC(domain='global'):
     result = ApiResult()
     headers = {'content-type': 'application/json',
                'accept': 'application/json'}
     base_url = current_app.config['ECAPI_URL']
-    url = base_url + 'domains/global/iocs/download'
+    url = base_url + 'domains/' + domain + '/iocs/download'
     r = requests.get(url,
                      auth=HTTPBasicAuth(current_user.clientnet_user,
                                         current_user.clientnet_password),
@@ -43,7 +44,7 @@ def DownloadIOC():
 
     if result.status_code == 200:
         iocs = json.loads(r.content)
-        result.html = render_template('_iocs.html', iocs=iocs)
+        result.html = render_template('_iocs.html', iocs=iocs, domainname=domain)
     else:
         if result.status_code == 401:
             result.error_message = 'Unauthorized access. Username or password incorrect'
@@ -54,12 +55,12 @@ def DownloadIOC():
     return result
 
 
-def DeleteIOC(ioc, domain='global'):
+def DeleteIOC(ioc):
     result = ApiResult()
     headers = {'Content-Type': 'application/json',
                'Accept': 'application/json'}
     base_url = current_app.config['ECAPI_URL']
-    url = base_url + 'domains/' + domain + '/iocs/upload'
+    url = base_url + 'domains/' + ioc.iocDomain[0] + '/iocs/upload'
     params = {'api-list-action': 'IOC'}
 
     data = [{'APIRowAction': 'D',

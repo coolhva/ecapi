@@ -1,8 +1,9 @@
 from flask import request
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import ValidationError, DataRequired
-from app.models import User
+from app.models import User, Domain
 
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -19,6 +20,16 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(username=self.username.data).first()
             if user is not None:
                 raise ValidationError('Please use a different username.')
+
+class DomainForm(FlaskForm):
+    domainname = StringField('Domain', validators=[DataRequired()])
+    submit = SubmitField('Add domain')
+
+    def validate_domainname(self, domainname):
+        domain = Domain.query.filter_by(domainname=self.domainname.data, user_id = current_user.id).first()
+        if domain is not None:
+            raise ValidationError('Domainname already in use')
+
 
 class EmptyForm(FlaskForm):
     submit = SubmitField('Submit')

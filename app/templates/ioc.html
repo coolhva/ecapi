@@ -1,19 +1,22 @@
 {% extends "base.html" %}
 {% import 'bootstrap/form.html' as wtf %}
 
-{% block styles %}
-    {{super()}}
-    <style>
-        td.idcol {
-          font-size: 8px;
-        }
-        </style>
-{% endblock %}
-
 {% block app_content %}
     <h1>Email.Cloud IOC API Management</h1>
     <p>This application allows you to manage indicators of compromise (IOC) in your Email.Cloud tenant.</p>
-    <button type="button" id="downloadbutton" class="btn btn-primary" onclick="javascript:downloadIOC()">Retrieve IOC</button>
+    <form class="form-inline">
+        <div class="form-group mb-2">
+            <select id="domainname" class="form-control form-control-sm">
+                <option>Global</option>
+                {% for domain in current_user.domains %}
+                <option>{{ domain.domainname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <button type="button" id="downloadbutton" class="btn btn-primary" onclick="javascript:downloadIOC(document.getElementById('domainname').value)">Retrieve IOC</button>
+        </div>
+    </form>
     <div id="iocs">
 
     </div>
@@ -26,10 +29,10 @@
             return '<img src="/static/' + img + '" alt="' + data + '"height="' + size + '" title="' + title + '" />'
         }
 
-        function downloadIOC() {
+        function downloadIOC(domainname) {
             $('#downloadbutton').attr('disabled','disabled');
             $('#iocs').html('<img src="{{ url_for('static', filename='loading.gif') }}">');
-            $.post('/ioc/download', {
+            $.post('/ioc/download/' + domainname.toLowerCase(), {
             }).done(function(response) {
                 if(response['status_code']==200) {
                     $('#iocs').html(response['html']);
@@ -38,12 +41,16 @@
                         columnDefs: [
                             {
                                 targets: 0,
-                                className: 'idcol',
                                 visible: false,
                                 orderable: false
                             },
                             {
                                 targets: 1,
+                                visible: false,
+                                orderable: false
+                            },
+                            {
+                                targets: 2,
                                 render: function (data, type, row) {
                                     switch(data) {
                                         case "Active":
@@ -55,7 +62,7 @@
                                 orderable: false
                             },
                             {
-                                targets: 2,
+                                targets: 3,
                                 render: function (data, type, row) {
                                     switch(data) {
                                         case "I":
@@ -74,7 +81,7 @@
                                 orderable: false
                             },
                             {
-                                targets: 6,
+                                targets: 7,
                                 render: function (data, type, row) {
                                     switch(data) {
                                         case "B":
@@ -99,7 +106,7 @@
                                 orderable: false
                             },
                             { 
-                                targets: 8,
+                                targets: 9,
                                 data: null,
                                 defaultContent: '<a class="delete" href="#"><img src="/static/action_delete.svg" height="32"></a>',
                                 orderable: false 
@@ -111,7 +118,7 @@
                         var table= $("#ioctable").DataTable();
                         var row = table.row( $(this).parents('tr') );
                         var data = table.row( $(this).parents('tr') ).data();
-                        var ioc = new IOC(data[0],data[4],data[5],data[3],data[2],data[6]);
+                        var ioc = new IOC(data[0],data[1],data[4],data[5],data[6],data[3],data[7]);
 
                         $.ajax({
                             url: '/ioc/delete',
@@ -144,7 +151,8 @@
             $('#downloadbutton').removeAttr('disabled');
         }
 
-        function IOC(iocBlackListId, iocType, iocValue, description, emailDirection, remediationAction) {
+        function IOC(iocDomain, iocBlackListId, iocType, iocValue, description, emailDirection, remediationAction) {
+            this.iocDomain = iocDomain,
             this.iocBlackListId = iocBlackListId, 
             this.iocType = iocType, 
             this.iocValue = iocValue, 
