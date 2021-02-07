@@ -7,6 +7,7 @@ from app.main.forms import EditProfileForm, EmptyForm
 from app.models import User
 from app.main import bp
 from app.main import iocapi
+from app.main.iocapi import IOC
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -41,6 +42,15 @@ def ioc():
 @login_required
 def ioc_download():
     ioc_result = iocapi.DownloadIOC()
+    return jsonify({'html': ioc_result.html, 
+                    'status_code': ioc_result.status_code, 
+                    'error_message': ioc_result.error_message })
+
+@bp.route('/ioc/delete', methods=['POST'])
+@login_required
+def ioc_delete():
+    ioc = IOC(**request.json)
+    ioc_result = iocapi.DeleteIOC(ioc)
     return jsonify({'html': ioc_result.html, 
                     'status_code': ioc_result.status_code, 
                     'error_message': ioc_result.error_message })

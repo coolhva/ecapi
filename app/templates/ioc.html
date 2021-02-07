@@ -22,59 +22,116 @@
 {% block scripts %}
     {{ super() }}
     <script>
+        function imgurl(img, data, title, size=32) {
+            return '<img src="/static/' + img + '" alt="' + data + '"height="' + size + '" title="' + title + '" />'
+        }
+
         function downloadIOC() {
             $('#downloadbutton').attr('disabled','disabled');
             $('#iocs').html('<img src="{{ url_for('static', filename='loading.gif') }}">');
             $.post('/ioc/download', {
-
             }).done(function(response) {
                 if(response['status_code']==200) {
                     $('#iocs').html(response['html']);
-                    var img = '';
-                    var t = $('#ioctable').DataTable({
+                    $('#ioctable').DataTable({
+                        order: [4, 'asc'],
                         columnDefs: [
                             {
                                 targets: 0,
                                 className: 'idcol',
-                                visible: false
+                                visible: false,
+                                orderable: false
+                            },
+                            {
+                                targets: 1,
+                                render: function (data, type, row) {
+                                    switch(data) {
+                                        case "Active":
+                                            return imgurl('active.svg',data,'Active');
+                                        default:
+                                        return imgurl('inactive.svg',data,'Inactive');
+                                    }
+                                },
+                                orderable: false
                             },
                             {
                                 targets: 2,
                                 render: function (data, type, row) {
                                     switch(data) {
-                                        case "Active":
-                                            return '<img src="/static/active.svg" alt="' + data + '"height="16" />';
-                                        default:
-                                        return '<img src="/static/inactive.svg" alt="' + data + '"height="16" />';
-                                    }
-                                }
-                            },
-                            {
-                                targets: 3,
-                                render: function (data, type, row) {
-                                    switch(data) {
                                         case "I":
                                             img='inbound.svg';
-                                            return '<img src="/static/' + img + '" alt="' + data + '"height="16" />';
+                                            return imgurl(img,data,'Inbound');
                                         case "O":
                                             img='outbound.svg';
-                                            return '<img src="/static/' + img + '" alt="' + data + '"height="16" />';
+                                            return imgurl(img,data,'Outbound');
                                         case "B":
                                             img='bidirectional.svg';
-                                            return '<img src="/static/' + img + '" alt="' + data + '"height="16" />';
+                                            return imgurl(img,data,'Both');
                                         default:
                                             return '';
                                     }
-                                }
+                                },
+                                orderable: false
+                            },
+                            {
+                                targets: 6,
+                                render: function (data, type, row) {
+                                    switch(data) {
+                                        case "B":
+                                            img='block_delete.svg';
+                                            return imgurl(img,data,'Block & Delete');
+                                        case "Q":
+                                            img='quarantine.svg';
+                                            return imgurl(img,data,'Quarantine');
+                                        case "M":
+                                            img='redirect.svg';
+                                            return imgurl(img,data,'Redirect');
+                                        case "T":
+                                            img='tagsubject.svg';
+                                            return imgurl(img,data,'Tag Subject');
+                                        case "H":
+                                            img='appendheader.svg';
+                                            return imgurl(img,data,'Append Header');
+                                        default:
+                                            return '';
+                                    }
+                                },
+                                orderable: false
+                            },
+                            { 
+                                targets: 8,
+                                data: null,
+                                defaultContent: '<a class="delete" href="#"><img src="/static/action_delete.svg" height="32"></a>',
+                                orderable: false 
                             }
                         ]
+                    });
+                    
+                    $('#ioctable tbody').on( 'click', '.delete', function () {
+                        var table= $("#ioctable").DataTable();
+                        var row = table.row( $(this).parents('tr') );
+                        var data = table.row( $(this).parents('tr') ).data();
+                        var ioc = new IOC(data[0],data[4],data[5],data[3],data[2],data[6]);
+
+                        $.ajax({
+                            url: '/ioc/delete',
+                            method: 'POST',
+                            contentType:"application/json; charset=utf-8",
+                            dataType:"json",
+                            data: JSON.stringify(ioc)
+                        }).done(function(response) {
+                            if(response['status_code']=='200') {
+                                row.remove().draw();
+                            } else {
+                                $('#iocs').html('<hr><div class="alert alert-danger" role="alert">ERROR ' 
+                                    + response['status_code'] + ': '
+                                    + response['error_message'] + '</div>');
+                            }
+                        }).fail(function() {
+                            alert('Unable to remove this IOC')
+                        });
                     } );
 
-                    t.on( 'order.dt search.dt', function () {
-                    t.column(1, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-                        cell.innerHTML = i+1;
-                    } );
-                    }).draw();
                     flask_moment_render_all();
                 } else {
                     $('#iocs').html('<hr><div class="alert alert-danger" role="alert">ERROR ' 
@@ -85,6 +142,15 @@
                 $('#iocs').html('Error: Unable to load IOC');
             });
             $('#downloadbutton').removeAttr('disabled');
+        }
+
+        function IOC(iocBlackListId, iocType, iocValue, description, emailDirection, remediationAction) {
+            this.iocBlackListId = iocBlackListId, 
+            this.iocType = iocType, 
+            this.iocValue = iocValue, 
+            this.description = description, 
+            this.emailDirection = emailDirection, 
+            this.remediationAction = remediationAction
         }
     </script>
 {% endblock %}

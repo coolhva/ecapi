@@ -9,21 +9,36 @@ from flask_login import current_user
 from app import db
 from app.models import User
 
-class IOCDownload():
-    def __init__(self, html, status_code, error_message):
+class ApiResult():
+    def __init__(self, html='', status_code='', error_message=''):
         self.html = html
         self.status_code = status_code
         self.error_message = error_message
-        
+
+
+class IOC():
+    def __init__(self, iocBlackListId='', iocType='', iocValue='', description='',
+                 emailDirection='', remediationAction='', status='', expiryDate=''):
+        self.iocBlackListId = iocBlackListId
+        self.iocType = iocType
+        self.iocValue = iocValue
+        self.description = description
+        self.emailDirection = emailDirection
+        self.remediationAction = remediationAction
+        self.status = status
+        self.expiryDate = expiryDate
+
+
 def DownloadIOC():
-    result = IOCDownload('','','')
-    headers = {'content-type': 'application/json', 'accept': 'application/json'}
+    result = ApiResult()
+    headers = {'content-type': 'application/json',
+               'accept': 'application/json'}
     base_url = current_app.config['ECAPI_URL']
     url = base_url + 'domains/global/iocs/download'
     r = requests.get(url,
-        auth=HTTPBasicAuth(current_user.clientnet_user, 
-                           current_user.clientnet_password),
-        headers = headers)
+                     auth=HTTPBasicAuth(current_user.clientnet_user,
+                                        current_user.clientnet_password),
+                     headers=headers)
     result.status_code = r.status_code
 
     if result.status_code == 200:
@@ -35,5 +50,41 @@ def DownloadIOC():
         elif result.status_code == 403:
             result.error_message = 'Access denied. User has no access to this API'
         else:
-            result.html = 'Error ' + str(r.status_code)        
+            result.html = 'Error ' + str(r.status_code)
     return result
+
+
+def DeleteIOC(ioc, domain='global'):
+    result = ApiResult()
+    headers = {'Content-Type': 'application/json',
+               'Accept': 'application/json'}
+    base_url = current_app.config['ECAPI_URL']
+    url = base_url + 'domains/' + domain + '/iocs/upload'
+    params = {'api-list-action': 'IOC'}
+
+    data = [{'APIRowAction': 'D',
+             'iocBlackListId': ioc.iocBlackListId,
+             'iocType': ioc.iocType,
+             'iocValue': ioc.iocValue,
+             'description': ioc.description,
+             'emailDirection': ioc.emailDirection,
+             'remediationAction': ioc.remediationAction
+             }]
+
+    r = requests.post(url, json=data,
+                      auth=HTTPBasicAuth(current_user.clientnet_user,
+                                         current_user.clientnet_password),
+                      params=params,
+                      headers=headers)
+    result.status_code = r.status_code
+
+    if result.status_code == 200:
+        return result
+    else:
+        if result.status_code == 401:
+            result.error_message = 'Unauthorized access. Username or password incorrect'
+        elif result.status_code == 403:
+            result.error_message = 'Access denied. User has no access to this API'
+        else:
+            result.error_message = 'Unknown error'
+            return result
