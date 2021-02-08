@@ -33,3 +33,7 @@ class DomainForm(FlaskForm):
 
 class EmptyForm(FlaskForm):
     submit = SubmitField('Submit')
+
+class IOCForm(FlaskForm):
+    
+    submit = SubmitField('Add')

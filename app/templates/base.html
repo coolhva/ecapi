@@ -32,8 +32,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.ioc') }}">IOC</a>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            IOC
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ url_for('main.ioc') }}">Manage</a>
+                            <a class="dropdown-item" href="{{ url_for('main.ioc') }}">Add</a>
+                        </div>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
@@ -53,7 +60,7 @@
         <!-- Your page content -->
         {% block content %}
         <div class="container">
-            <div id="notifications">
+            <div id="notifications" class="mt-3">
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
@@ -78,6 +85,23 @@
             {{ moment.include_moment() }}
             <script src="//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
             <script src="//cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+
+            <script>
+                function showAlert(type='info',title='',message) {
+                    var alerthtml = '<div class="alert alert-' + type +' alert-dismissible fade show" role="alert">'   
+                    if (title!='') {
+                        alerthtml += '<h4 class="alert-heading">' +  title + '</h4>'
+                    }
+                    alerthtml += '<p>' + message + '</p>'
+                    alerthtml += '  <button type="button" class="close" data-dismiss="alert" aria-label="Close"> \
+                                        <span aria-hidden="true">&times;</span> \
+                                    </button> \
+                                  </div>'
+
+                    document.getElementById('notifications').innerHTML += alerthtml;
+                }
+            </script>
+
         {% endblock %}
     </body>
 </html>

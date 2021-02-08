@@ -46,7 +46,9 @@ def DownloadIOC(domain='global'):
         iocs = json.loads(r.content)
         result.html = render_template('_iocs.html', iocs=iocs, domainname=domain)
     else:
-        if result.status_code == 401:
+        if result.status_code == 202:
+            result.error_message = json.loads(r.content)[0]['failureReason']
+        elif result.status_code == 401:
             result.error_message = 'Unauthorized access. Username or password incorrect'
         elif result.status_code == 403:
             result.error_message = 'Access denied. User has no access to this API'
@@ -82,10 +84,13 @@ def DeleteIOC(ioc):
     if result.status_code == 200:
         return result
     else:
-        if result.status_code == 401:
+        if result.status_code == 202:
+            result.error_message = json.loads(r.content)[0]['failureReason']
+        elif result.status_code == 401:
             result.error_message = 'Unauthorized access. Username or password incorrect'
         elif result.status_code == 403:
             result.error_message = 'Access denied. User has no access to this API'
         else:
             result.error_message = 'Unknown error'
-            return result
+            
+        return result

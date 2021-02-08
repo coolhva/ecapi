@@ -130,23 +130,20 @@
                             if(response['status_code']=='200') {
                                 row.remove().draw();
                             } else {
-                                $('#iocs').html('<hr><div class="alert alert-danger" role="alert">ERROR ' 
-                                    + response['status_code'] + ': '
-                                    + response['error_message'] + '</div>');
+                                showAlert('danger','ERROR ' + response['status_code'],response['error_message']);
                             }
                         }).fail(function() {
                             alert('Unable to remove this IOC')
+                            showAlert('danger','UNKNOWN ERROR','Unable to remove this IOC');
                         });
                     } );
 
                     flask_moment_render_all();
                 } else {
-                    $('#iocs').html('<hr><div class="alert alert-danger" role="alert">ERROR ' 
-                        + response['status_code'] + ': '
-                        + response['error_message'] + '</div>');
+                    showAlert('danger','ERROR ' + response['status_code'],response['error_message']);
                 }
             }).fail(function() {
-                $('#iocs').html('Error: Unable to load IOC');
+                showAlert('danger','UNKNOWN ERROR','Unable to load the IOC');
             });
             $('#downloadbutton').removeAttr('disabled');
         }
