@@ -4,19 +4,30 @@
 {% block app_content %}
     <h1>Email.Cloud IOC API Management</h1>
     <p>This application allows you to manage indicators of compromise (IOC) in your Email.Cloud tenant.</p>
-    <form class="form-inline">
-        <div class="form-group mb-2">
-            <select id="domainname" class="form-control form-control-sm">
-                <option>Global</option>
-                {% for domain in current_user.domains %}
-                <option>{{ domain.domainname }}</option>
-                {% endfor %}
-            </select>
+    <div class="row">
+        <div class="col-9">
+            <form class="form-inline">
+                <div class="form-group mb-2">
+                    <select id="domainname" class="form-control form-control-sm">
+                        <option>Global</option>
+                        {% for domain in current_user.domains %}
+                        <option>{{ domain.domainname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group mx-sm-3 mb-2">
+                    <button type="button" id="downloadbutton" class="btn btn-primary" onclick="javascript:downloadIOC(document.getElementById('domainname').value)">Retrieve IOC</button>
+                </div>
+            </form>
         </div>
-        <div class="form-group mx-sm-3 mb-2">
-            <button type="button" id="downloadbutton" class="btn btn-primary" onclick="javascript:downloadIOC(document.getElementById('domainname').value)">Retrieve IOC</button>
+        <div class="col-3 text-right">
+            <button type="button" class="btn btn-primary" onclick="javascript:document.getElementById('add_ioc_form').style='display: inherit'">+</button>
         </div>
-    </form>
+    </div>
+    <div id="add_ioc_form" style="display: none;">
+            <hr />
+            {{ wtf.render_form(form,form_type="horizontal") }}
+    </div>
     <div id="iocs">
 
     </div>
@@ -133,7 +144,6 @@
                                 showAlert('danger','ERROR ' + response['status_code'],response['error_message']);
                             }
                         }).fail(function() {
-                            alert('Unable to remove this IOC')
                             showAlert('danger','UNKNOWN ERROR','Unable to remove this IOC');
                         });
                     } );

@@ -3,7 +3,7 @@ import time
 from flask import render_template, flash, redirect, url_for, request, jsonify, current_app
 from flask_login import current_user, login_required
 from app import db
-from app.main.forms import DomainForm, EditProfileForm, EmptyForm
+from app.main.forms import DomainForm, EditProfileForm, EmptyForm, IOCForm
 from app.models import User, Domain
 from app.main import bp
 from app.main import iocapi
@@ -58,10 +58,14 @@ def delete_domain(domainname):
     flash('Domain has been removed.')
     return redirect(url_for('main.domains'))
 
-@bp.route('/ioc')
+@bp.route('/ioc', methods=['GET', 'POST'])
 @login_required
 def ioc():
-    return render_template('ioc.html', title='IOC')
+    form = IOCForm()
+    if form.validate_on_submit():
+        flash('TODO: IOC has been added')
+        return redirect(url_for('main.ioc'))
+    return render_template('ioc.html', title='IOC', form=form)
 
 @bp.route('/ioc/download/<domainname>', methods=['POST'])
 @login_required
