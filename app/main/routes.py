@@ -10,6 +10,10 @@ from app.main import iocapi
 from app.main.iocapi import IOC
 
 
+@bp.route('/favicon.ico')
+def favicon():
+    return current_app.send_static_file('favicon.ico')
+
 @bp.route('/', methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
