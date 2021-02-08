@@ -6,3 +6,4 @@ ecapi.code-workspace
 .vscode
 !**/__pycache__/
 __pycache__/
+db/app.db
