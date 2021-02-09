@@ -57,7 +57,7 @@ def DownloadIOC(domain='global'):
     return result
 
 
-def DeleteIOC(ioc):
+def UpdateIOC(ioc, action='D'):
     result = ApiResult()
     headers = {'Content-Type': 'application/json',
                'Accept': 'application/json'}
@@ -65,7 +65,7 @@ def DeleteIOC(ioc):
     url = base_url + 'domains/' + ioc.iocDomain[0] + '/iocs/upload'
     params = {'api-list-action': 'IOC'}
 
-    data = [{'APIRowAction': 'D',
+    data = [{'APIRowAction': action,
              'iocBlackListId': ioc.iocBlackListId,
              'iocType': ioc.iocType,
              'iocValue': ioc.iocValue,

@@ -29,7 +29,7 @@ def edit_profile():
         current_user.clientnet_user = form.clientnet_user.data
         current_user.clientnet_password = form.clientnet_password.data
         db.session.commit()
-        flash('Your changes have been saved.')
+        flash('Your changes have been saved.','success')
         return redirect(url_for('main.edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
@@ -45,7 +45,7 @@ def domains():
         domain = Domain(domainname=form.domainname.data, user_id=current_user.id)
         db.session.add(domain)
         db.session.commit()
-        flash('Domain has been added.')
+        flash('Domain has been added.','success')
         return redirect(url_for('main.domains'))
     return render_template('domains.html', title='Domains', form=form)
         
@@ -55,7 +55,7 @@ def delete_domain(domainname):
     domain = Domain.query.filter_by(domainname=domainname, user_id = current_user.id).first_or_404()
     db.session.delete(domain)
     db.session.commit()
-    flash('Domain has been removed.')
+    flash('Domain has been removed.',category='success')
     return redirect(url_for('main.domains'))
 
 @bp.route('/ioc', methods=['GET', 'POST'])
@@ -63,7 +63,15 @@ def delete_domain(domainname):
 def ioc():
     form = IOCForm()
     if form.validate_on_submit():
-        flash('TODO: IOC has been added')
+        ioc = IOC(iocBlackListId = form.iocBlackListId.data, iocDomain=form.domain.data, 
+                iocType=form.iocType.data, iocValue=form.iocValue.data, 
+                description=form.description.data, emailDirection=form.emailDirection.data, 
+                remediationAction=form.remediationAction.data)
+        ioc_result = iocapi.UpdateIOC(ioc,'A')
+        if ioc_result.status_code == 200:
+            flash('IOC has been added.',category='success')
+        else:
+            flash('ERROR ' + str(ioc_result.status_code) + ': ' + ioc_result.error_message,'danger')
         return redirect(url_for('main.ioc'))
     return render_template('ioc.html', title='IOC', form=form)
 
@@ -81,7 +89,7 @@ def ioc_download(domainname):
 @login_required
 def ioc_delete():
     ioc = IOC(**request.json)
-    ioc_result = iocapi.DeleteIOC(ioc)
+    ioc_result = iocapi.UpdateIOC(ioc,'D')
     return jsonify({'html': ioc_result.html, 
                     'status_code': ioc_result.status_code, 
                     'error_message': ioc_result.error_message })
