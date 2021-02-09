@@ -1,7 +1,10 @@
 from flask import request
+from flask.app import Flask
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, SelectField, HiddenField
+from flask_wtf.file import FileField, FileRequired
+from wtforms import StringField, SubmitField, PasswordField, SelectField, HiddenField, RadioField
+from wtforms.fields.core import RadioField
 from wtforms.validators import ValidationError, DataRequired
 from wtforms.widgets.core import Select
 from app.models import User, Domain
@@ -30,7 +33,6 @@ class DomainForm(FlaskForm):
         domain = Domain.query.filter_by(domainname=self.domainname.data, user_id = current_user.id).first()
         if domain is not None:
             raise ValidationError('Domainname already in use')
-
 
 class EmptyForm(FlaskForm):
     submit = SubmitField('Submit')
@@ -66,6 +68,20 @@ class IOCForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(IOCForm, self).__init__(*args, **kwargs)
+        d = [('global','Global')]
+        for domain in current_user.domains:
+            d.append((domain.domainname,domain.domainname))
+        self.domain.choices = d
+
+class BulkIOCForm(FlaskForm):
+    domain = SelectField('Domain',default='global',validators=[DataRequired()])
+    action = SelectField('Action',choices=[('MERGE','Merge'),('REPLACE','Replace'),('IOC','Individual IOC\'s')], default='merge', validators=[DataRequired()])
+    fileType = RadioField('Filetype',choices=[('csv','Comma Seperated Value (CSV)'), ('json','JavaScript Object Notation (JSON)')], validators=[DataRequired()], default='csv')
+    iocFile = FileField('IOC file', validators=[FileRequired()])
+    submit = SubmitField('Upload')
+
+    def __init__(self, *args, **kwargs):
+        super(BulkIOCForm, self).__init__(*args, **kwargs)
         d = [('global','Global')]
         for domain in current_user.domains:
             d.append((domain.domainname,domain.domainname))

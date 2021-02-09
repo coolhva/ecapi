@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% import 'bootstrap/form.html' as wtf %}
+
+{% block app_content %}
+    <h1>Bulk IOC upload</h1>
+    {% if form is defined %}
+    <p>Please provide a csv or json file.</p>
+    <div id="bulk_ioc_form" class="col-md-6">
+        <hr />
+        {{ wtf.render_form(form,form_type="horizontal") }}
+    </div>
+    {% endif %}
+    {% if ioc_result is defined %}
+    <div id="ioc_result">
+        {% if ioc_result.status_code != 200 %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <h4 class="alert-heading">ERROR {{ ioc_result.status_code }}</h4>
+            {{ ioc_result.error_message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+        {% endif %}
+
+        {% if ioc_result.error_iocs != None %}
+        <hr />
+        <table id="ioc_error_table" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Value</th>
+                    <th>Failure reason</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for ioc in ioc_result.error_iocs %}
+                <tr>
+                    <td>{{ ioc.iocBlackListId }}</td>
+                    <td>{{ ioc.iocType }}</td>
+                    <td>{{ ioc.iocValue }}</td>
+                    <td>{{ ioc.failureReason }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>    
+        {% endif %}    
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% if ioc_result is defined and ioc_result.error_iocs != None %}
+    <script>
+        $(document).ready(function() {
+            $('#ioc_error_table').DataTable({
+                columnDefs: [
+                    {
+                        targets: 3,
+                        orderable: false
+                    }
+                ]
+            });
+        } );
+    </script>
+    {% endif %}
+{% endblock %}

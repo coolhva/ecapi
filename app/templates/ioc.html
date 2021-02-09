@@ -2,29 +2,42 @@
 {% import 'bootstrap/form.html' as wtf %}
 
 {% block app_content %}
-    <h1>Email.Cloud IOC API Management</h1>
+    <h1>IOC Management</h1>
     <p>This application allows you to manage indicators of compromise (IOC) in your Email.Cloud tenant.</p>
     <div class="row">
         <div class="col-9">
             <form class="form-inline">
                 <div class="form-group mb-2">
                     <select id="domainname" class="form-control form-control-sm">
-                        <option>Global</option>
+                        <option value="global">Global</option>
                         {% for domain in current_user.domains %}
-                        <option>{{ domain.domainname }}</option>
+                        <option value="{{ domain.domainname.lower() }}">{{ domain.domainname }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-group mx-sm-3 mb-2">
-                    <button type="button" id="downloadbutton" class="btn btn-primary" onclick="javascript:downloadIOC(document.getElementById('domainname').value)">Retrieve IOC</button>
+                <div class="form-group mx-sm-1 mb-2">
+                    <button type="button" id="downloadbutton" class="btn btn-primary" onclick="javascript:downloadIOC(document.getElementById('domainname').value)">Show IOC's</button>
+                </div>
+                <div class="form-group mx-sm-1 mb-2">
+                    <button type="button" id="exportcsvbutton" class="btn btn-primary" onclick="javascript:exportIOC(document.getElementById('domainname').value,'csv')">Export CSV</button>
+                </div>
+                <div class="form-group mx-sm-1 mb-2">
+                    <button type="button" id="exportjsonbutton" class="btn btn-primary" onclick="javascript:exportIOC(document.getElementById('domainname').value,'json')">Export JSON</button>
                 </div>
             </form>
         </div>
-        <div class="col-3 text-right">
-            <button type="button" class="btn btn-primary" onclick="javascript:document.getElementById('add_ioc_form').style='display: inherit'">+</button>
+        <div class="col-3">
+            <form class="form-inline float-right">
+                <div class="form-group mx-sm-1 mb-2">
+                    <button type="button" class="btn btn-warning" onclick="javascript:renewIOC(document.getElementById('domainname').value)">Renew IOC's</button>
+                </div>
+                <div class="form-group mx-sm-1 mb-2">
+                    <button type="button" class="btn btn-success" onclick="javascript:document.getElementById('add_ioc_form').style='display: inherit'">+</button>
+                </div>
+            </form>
         </div>
     </div>
-    <div id="add_ioc_form" style="display: none;">
+    <div id="add_ioc_form" {% if form.iocValue.data == None %} style="display: none;"{% endif %}>
             <hr />
             {{ wtf.render_form(form,form_type="horizontal") }}
     </div>
@@ -38,6 +51,14 @@
     <script>
         function imgurl(img, data, title, size=32) {
             return '<img src="/static/' + img + '" alt="' + data + '"height="' + size + '" title="' + title + '" />'
+        }
+
+        function exportIOC(domainname, filetype) {
+            window.location.href = '/ioc/export/' + filetype + '/' + domainname;
+        }
+
+        function renewIOC(domainname) {
+            window.location.href = '/ioc/renew/' + domainname;
         }
 
         function downloadIOC(domainname) {
