@@ -12,8 +12,12 @@ This will start a docker container listening on port 8000 on the docker host and
 
    Register yourself a new user and enter your ClientNet credentials for the API (it is recommended to create a seperate API user in the ClientNet portal).
    
+   ![register_user](https://raw.githubusercontent.com/coolhva/ecapi/main/docs/register.png)
+   
 2. ***(optional)*** After logging in add your domains if you have domain specific IOC configuration.
 3. Now you can start using the application by showing the current IOC's, use the + sign to add new IOC's or use the bulk upload functionality.
+
+![main_interface](https://raw.githubusercontent.com/coolhva/ecapi/main/docs/ecapi_main.png)
 
 ## Run code in your development environment
 
