@@ -4,9 +4,9 @@ This repo contains the source code for the Email.Cloud API (ECAPI) docker contai
 ## Running the docker container
 Please issue the following command on a docker host to run the docker container:
 ```shell
-docker run --name ecapi -d -p 8000:5000 -v /docker/db:/home/ecapi/db --rm coolhva/ecapi:latest
+docker run --name ecapi -d -p 8000:5000 -v /docker/db:/home/ecapi/db coolhva/ecapi:latest
 ```
-This will start a docker container listening on port 8000 on the docker host and binds the folder ```/docker/db``` to the folder where the docker container stores its (SQLite) database.
+This will start a docker container listening on port 8000 on the docker host and binds the folder ```/docker/db``` to the folder where the docker container stores its (SQLite) database. The ```-v /docker/db:/home/ecapi/db``` parameter is optional, without the parameter it will use the db inside the container.
 
 1. Go to http://dockerhost:8000/
 
