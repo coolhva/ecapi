@@ -8,7 +8,7 @@
         <div class="col-9">
             <form class="form-inline">
                 <div class="form-group mb-2">
-                    <select id="domainname" class="form-control form-control-sm">
+                    <select id="domainname">
                         <option value="global">Global</option>
                         {% for domain in current_user.domains %}
                         <option value="{{ domain.domainname.lower() }}">{{ domain.domainname }}</option>
