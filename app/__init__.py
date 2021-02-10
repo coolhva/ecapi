@@ -44,7 +44,7 @@ def create_app(config_class=Config):
     app.jinja_env.globals.update(string_datetime=string_datetime)
 
     if not app.debug and not app.testing:
-        if app.config['MAIL_SERVER']:
+        if app.config['MAIL_SERVER'] and app.config['ADMIN_EMAIL']:
             auth = None
             if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
                 auth = (app.config['MAIL_USERNAME'],
@@ -54,8 +54,8 @@ def create_app(config_class=Config):
                 secure = ()
             mail_handler = SMTPHandler(
                 mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-                fromaddr='no-reply@' + app.config['MAIL_SERVER'],
-                toaddrs=app.config['ADMINS'], subject='Microblog Failure',
+                fromaddr=app.config['MAIL_FROM'],
+                toaddrs=[app.config['ADMIN_EMAIL']], subject='ECAPI Failure',
                 credentials=auth, secure=secure)
             mail_handler.setLevel(logging.ERROR)
             app.logger.addHandler(mail_handler)
