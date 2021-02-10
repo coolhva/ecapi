@@ -15,6 +15,7 @@ This will start a docker container listening on port 8000 on the docker host and
 |SECRET_KEY|7Ghy648FibRfcgQ...AxdTFB2Brz|Used by the Flask server to encrypt sessions|
 | SQLALCHEMY_DATABASE_URI|sqlite://./db/app.db|Used to point to a database that holds the users and domains|
 | LOG_TO_STDOUT |False|If True logs will send to STDOUT|
+|ADMIN_EMAIL|Empty|Administrator email to receive errors from the application|
 |MAIL_SERVER|Empty|IP or DNS name of mail server|
 |MAIL_PORT|Empty|TCP Port of mailserver|
 |MAIL_USE_TLS|Empty|If set to True it will use TLS when sending email|
