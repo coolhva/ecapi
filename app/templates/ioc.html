@@ -143,7 +143,9 @@
                                 defaultContent: '<a class="delete" href="#"><img src="/static/action_delete.svg" height="32"></a>',
                                 orderable: false 
                             }
-                        ]
+                        ], 'drawCallback': function( settings ) {
+                            flask_moment_render_all();
+                            }
                     });
                     
                     $('#ioctable tbody').on( 'click', '.delete', function () {
@@ -168,6 +170,7 @@
                             showAlert('danger','UNKNOWN ERROR','Unable to remove this IOC');
                         });
                     } );
+                    $('select').selectpicker();
 
                     flask_moment_render_all();
                 } else {
