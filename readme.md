@@ -8,6 +8,8 @@ docker run --name ecapi -d -p 8000:5000 -v /docker/db:/home/ecapi/db coolhva/eca
 ```
 This will start a docker container listening on port 8000 on the docker host and binds the folder ```/docker/db``` to the folder where the docker container stores its (SQLite) database. The ```-v /docker/db:/home/ecapi/db``` parameter is optional, without the parameter it will use the db inside the container.
 
+**Optional environment variables**
+
 |Environment variable|Default|Description
 |:---|:---|:--|
 |SECRET_KEY|7Ghy648FibRfcgQ...AxdTFB2Brz|Used by the Flask server to encrypt sessions|
