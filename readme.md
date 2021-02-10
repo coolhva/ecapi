@@ -8,6 +8,19 @@ docker run --name ecapi -d -p 8000:5000 -v /docker/db:/home/ecapi/db coolhva/eca
 ```
 This will start a docker container listening on port 8000 on the docker host and binds the folder ```/docker/db``` to the folder where the docker container stores its (SQLite) database. The ```-v /docker/db:/home/ecapi/db``` parameter is optional, without the parameter it will use the db inside the container.
 
+|Environment variable|Default|Description
+|:---|:---|:--|
+|SECRET_KEY|7Ghy648FibRfcgQ...AxdTFB2Brz|Used by the Flask server to encrypt sessions|
+| SQLALCHEMY_DATABASE_URI|sqlite://./db/app.db|Used to point to a database that holds the users and domains|
+| LOG_TO_STDOUT |False|If True logs will send to STDOUT|
+|MAIL_SERVER|Empty|IP or DNS name of mail server|
+|MAIL_PORT|Empty|TCP Port of mailserver|
+|MAIL_USE_TLS|Empty|If set to True it will use TLS when sending email|
+|MAIL_USERNAME|Empty|Username for the mailserver|
+|MAIL_PASSWORD|Empty|Password for the mailserver|
+|MAIL_FROM|Empty|From Email address used in password reset mail|
+|ECAPI_URL|https://iocapi.emailsecurity.symantec.com/|Base URL for IOC API|
+
 1. Go to http://dockerhost:8000/
 
    Register yourself a new user and enter your ClientNet credentials for the API (it is recommended to create a seperate API user in the ClientNet portal).
