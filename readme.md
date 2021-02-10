@@ -1,6 +1,8 @@
 # Email.Cloud IOC API Management
 This repo contains the source code for the Email.Cloud API (ECAPI) docker container. Email.Cloud allows the use of Indicators Of Compromise (IOC) to manage in- and outbound email based on given criteria.
 
+![main_interface](https://raw.githubusercontent.com/coolhva/ecapi/main/docs/ecapi_main.png)
+
 ## Running the docker container
 Please issue the following command on a docker host to run the docker container:
 ```shell
@@ -34,8 +36,6 @@ This will start a docker container listening on port 8000 on the docker host and
    
 2. ***(optional)*** After logging in add your domains if you have domain specific IOC configuration.
 3. Now you can start using the application by showing the current IOC's, use the + sign to add new IOC's or use the bulk upload functionality.
-
-![main_interface](https://raw.githubusercontent.com/coolhva/ecapi/main/docs/ecapi_main.png)
 
 ## Run code in your development environment
 
