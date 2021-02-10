@@ -17,7 +17,7 @@ This will start a docker container listening on port 8000 on the docker host and
 | LOG_TO_STDOUT |False|If True logs will send to STDOUT|
 |ADMIN_EMAIL|Empty|Administrator email to receive errors from the application|
 |MAIL_SERVER|Empty|IP or DNS name of mail server|
-|MAIL_PORT|Empty|TCP Port of mailserver|
+|MAIL_PORT|25|TCP Port of mailserver|
 |MAIL_USE_TLS|Empty|If set to True it will use TLS when sending email|
 |MAIL_USERNAME|Empty|Username for the mailserver|
 |MAIL_PASSWORD|Empty|Password for the mailserver|
