@@ -19,3 +19,5 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_FROM = os.environ.get('MAIL_FROM')
     ECAPI_URL = os.environ.get('ECAPI_URL') or 'https://iocapi.emailsecurity.symantec.com/'
+    SERVER_NAME = os.environ.get('SERVER_NAME')
+    PREFERRED_URL_SCHEME = os.environ.get('PREFERRED_URL_SCHEME') or 'http'
