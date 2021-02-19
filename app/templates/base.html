@@ -31,7 +31,6 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.ioc') }}">Manage</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.bulk_ioc') }}">Bulk Update</a></li>
                 </ul>
@@ -43,6 +42,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.edit_profile') }}">Profile</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
                     {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Help</a></li>
                 </ul>
             </div>
             </div>
