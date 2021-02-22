@@ -2,7 +2,7 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import datetime
 import os
-from flask import Flask, request, current_app
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -19,6 +19,7 @@ login.login_message = 'Please log in to access this page.'
 mail = Mail()
 bootstrap = Bootstrap()
 moment = Moment()
+
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -80,10 +81,12 @@ def create_app(config_class=Config):
 
     return app
 
+
 def string_datetime(value):
     """Convert string in to datetime"""
     if value is None:
         return ""
     return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
 
-from app import models
+
+from app import models  # noqa: E402, F401

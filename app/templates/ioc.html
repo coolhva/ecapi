@@ -63,7 +63,7 @@
 
         function downloadIOC(domainname) {
             $('#downloadbutton').attr('disabled','disabled');
-            $('#iocs').html('<img src="{{ url_for('static', filename='loading.gif') }}">');
+            $('#iocs').html('<img src="{{ url_for("static", filename="loading.gif") }}">');
             $.post('/ioc/download/' + domainname.toLowerCase(), {
             }).done(function(response) {
                 if(response['status_code']==200) {
@@ -174,9 +174,11 @@
 
                     flask_moment_render_all();
                 } else {
+                    $('#iocs').html('');
                     showAlert('danger','ERROR ' + response['status_code'],response['error_message']);
                 }
             }).fail(function() {
+                $('#iocs').html('');
                 showAlert('danger','UNKNOWN ERROR','Unable to load the IOC');
             });
             $('#downloadbutton').removeAttr('disabled');

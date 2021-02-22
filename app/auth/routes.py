@@ -39,7 +39,7 @@ def register():
         return redirect(url_for('main.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, 
+        user = User(username=form.username.data,
                     email=form.email.data,
                     clientnet_user=form.clientnet_user.data,
                     clientnet_password=form.clientnet_password.data)

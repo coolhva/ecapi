@@ -1,24 +1,21 @@
-from logging import error
-from flask.json import jsonify
 import requests
 from requests.auth import HTTPBasicAuth
 import json
 import io
-from datetime import datetime
-import time
 from flask import render_template, current_app, abort
 from flask_login import current_user
-from app import db
-from app.models import User, Domain
 from enum import Enum
 import csv
+
 
 class FileType(Enum):
     csv = 1
     json = 2
 
+
 class ApiResult():
-    def __init__(self, html='', status_code='', error_message='', error_iocs=None):
+    def __init__(self, html='', status_code='', error_message='',
+                 error_iocs=None):
         self.html = html
         self.status_code = status_code
         self.error_message = error_message
@@ -26,8 +23,9 @@ class ApiResult():
 
 
 class IOC():
-    def __init__(self, iocDomain='', iocBlackListId='', iocType='', iocValue='', description='',
-                 emailDirection='', remediationAction='', status='', expiryDate=''):
+    def __init__(self, iocDomain='', iocBlackListId='', iocType='',
+                 iocValue='', description='', emailDirection='',
+                 remediationAction='', status='', expiryDate=''):
         self.iocDomain = iocDomain,
         self.iocBlackListId = iocBlackListId
         self.iocType = iocType
@@ -37,6 +35,7 @@ class IOC():
         self.remediationAction = remediationAction
         self.status = status
         self.expiryDate = expiryDate
+
 
 def RenewIOC(domain='global'):
     base_url = current_app.config['ECAPI_URL']
@@ -49,6 +48,7 @@ def RenewIOC(domain='global'):
         return True
     else:
         return False
+
 
 def DownloadIOC(domain='global'):
     result = ApiResult()
@@ -64,17 +64,21 @@ def DownloadIOC(domain='global'):
 
     if result.status_code == 200:
         iocs = json.loads(r.content)
-        result.html = render_template('_iocs.html', iocs=iocs, domainname=domain)
+        result.html = render_template('_iocs.html', iocs=iocs,
+                                      domainname=domain)
     else:
         if result.status_code == 202:
             result.error_message = json.loads(r.content)[0]['failureReason']
         elif result.status_code == 401:
-            result.error_message = 'Unauthorized access. Username or password incorrect'
+            result.error_message = 'Unauthorized access. ' \
+                                   'Username or password incorrect'
         elif result.status_code == 403:
-            result.error_message = 'Access denied. User has no access to this API'
+            result.error_message = 'Access denied. User has no access ' \
+                                   'to this API'
         else:
             result.html = 'Error ' + str(r.status_code)
     return result
+
 
 def ExportIOC(fileType: FileType, domain='global'):
     headers = {'content-type': 'application/json',
@@ -90,12 +94,17 @@ def ExportIOC(fileType: FileType, domain='global'):
             return json.loads(r.content)
         if fileType == FileType.csv:
             csvexport = io.StringIO()
-            csvwriter = csv.writer(csvexport, delimiter=',', quotechar='"',quoting=csv.QUOTE_ALL)
-            csvwriter.writerow(['APIRowAction','iocBlackListId','iocType','iocValue','description',
-                                'emailDirection', 'remediationAction','status','expiryDate'])
+            csvwriter = csv.writer(csvexport, delimiter=',', quotechar='"',
+                                   quoting=csv.QUOTE_ALL)
+            csvwriter.writerow(['APIRowAction', 'iocBlackListId', 'iocType',
+                                'iocValue', 'description', 'emailDirection',
+                                'remediationAction', 'status', 'expiryDate'])
             for ioc in json.loads(r.content):
-                csvwriter.writerow(['', ioc['iocBlackListId'], ioc['iocType'], ioc['iocValue'], ioc['description'],
-                                ioc['emailDirection'], ioc['remediationAction'], ioc['status'], ioc['expiryDate']])
+                csvwriter.writerow(['', ioc['iocBlackListId'], ioc['iocType'],
+                                    ioc['iocValue'], ioc['description'],
+                                    ioc['emailDirection'],
+                                    ioc['remediationAction'], ioc['status'],
+                                    ioc['expiryDate']])
             csvexport.seek(0)
             return csvexport.read()
     else:
@@ -132,13 +141,15 @@ def UpdateIOC(ioc, action='D'):
         if result.status_code == 202:
             result.error_message = json.loads(r.content)[0]['failureReason']
         elif result.status_code == 401:
-            result.error_message = 'Unauthorized access. Username or password incorrect'
+            result.error_message = 'Unauthorized access. Username or ' \
+                                   'password incorrect'
         elif result.status_code == 403:
-            result.error_message = 'Access denied. User has no access to this API'
+            result.error_message = 'Access denied. User has no access to ' \
+                                   'this API'
         else:
             result.error_message = 'Unknown error'
-            
         return result
+
 
 def BulkUpdateIOC(domain, fileType: FileType, iocs, action):
     result = ApiResult()
@@ -169,12 +180,14 @@ def BulkUpdateIOC(domain, fileType: FileType, iocs, action):
             result.error_message = 'Import error: ' + r.headers['x-status']
             result.error_iocs = json.loads(r.content)
         elif result.status_code == 400:
-            result.error_message = 'Input error: ' + r.headers['x-diagnostics-info']
+            result.error_message = 'Input error: ' + \
+                                   r.headers['x-diagnostics-info']
         elif result.status_code == 401:
-            result.error_message = 'Unauthorized access. Username or password incorrect'
+            result.error_message = 'Unauthorized access. Username or ' \
+                                   'password incorrect'
         elif result.status_code == 403:
-            result.error_message = 'Access denied. User has no access to this API'
+            result.error_message = 'Access denied. User has no access to ' \
+                                   'this API'
         else:
             result.error_message = 'Unknown error'
-            
         return result
