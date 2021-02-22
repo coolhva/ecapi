@@ -8,8 +8,10 @@ Author: henk.vanachterberg@broadcom.com
 """
 from app import create_app, db
 from app.models import User
+from flask_ngrok import run_with_ngrok
 
 app = create_app()
+run_with_ngrok(app)
 
 
 @app.shell_context_processor
