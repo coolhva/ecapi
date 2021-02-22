@@ -2,6 +2,7 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import datetime
 import os
+from flask_ngrok import run_with_ngrok
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -23,6 +24,7 @@ moment = Moment()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
+    run_with_ngrok(app)
     app.config.from_object(config_class)
 
     db.init_app(app)
