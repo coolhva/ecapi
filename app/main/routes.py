@@ -77,13 +77,22 @@ def ioc():
                   description=form.description.data,
                   emailDirection=form.emailDirection.data,
                   remediationAction=form.remediationAction.data)
-        ioc_result = iocapi.UpdateIOC(ioc, 'A')
-        if ioc_result.status_code == 200:
-            flash('IOC has been added.', 'success')
+        if (ioc.iocBlackListId):
+            ioc_result = iocapi.UpdateIOC(ioc, 'U')
+            if ioc_result.status_code == 200:
+                flash('IOC has been updated.', 'success')
+            else:
+                flash('ERROR ' + str(ioc_result.status_code) + ': '
+                      + ioc_result.error_message, 'danger')
+                return render_template('ioc.html', title='IOC', form=form)
         else:
-            flash('ERROR ' + str(ioc_result.status_code) + ': '
-                  + ioc_result.error_message, 'danger')
-            return render_template('ioc.html', title='IOC', form=form)
+            ioc_result = iocapi.UpdateIOC(ioc, 'A')
+            if ioc_result.status_code == 200:
+                flash('IOC has been added.', 'success')
+            else:
+                flash('ERROR ' + str(ioc_result.status_code) + ': '
+                      + ioc_result.error_message, 'danger')
+                return render_template('ioc.html', title='IOC', form=form)
         return redirect(url_for('main.ioc'))
     return render_template('ioc.html', title='IOC', form=form)
 
