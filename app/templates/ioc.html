@@ -63,6 +63,10 @@
     {{ super() }}
     <script>
 
+        var domSetup = "<'row'<'col-sm-12 col-md-4'l><'col-sm-12 col-md-8'f>>" +
+                       "<'row'<'col-sm-12'tr>>" +
+                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+
         function imgurl(img, data, title, size=32) {
             return '<img src="/static/' + img + '" alt="' + data + '"height="' + size + '" title="' + title + '" />'
         }
@@ -190,9 +194,11 @@
                                 defaultContent: '<a class="delete" href="#"><img src="/static/action_delete.svg" height="32"></a>',
                                 orderable: false 
                             }
-                        ], 'drawCallback': function( settings ) {
+                        ],
+                        'dom': domSetup,
+                        'drawCallback': function( settings ) {
                             flask_moment_render_all();
-                            }
+                        }
                     });
                     
                     $('#ioctable tbody').on( 'click', '.delete', function () {
@@ -233,6 +239,7 @@
                         document.forms['IOCForm']['remediationAction'].value = ioc.remediationAction;
                         document.forms['IOCForm']['submit'].value = 'Update';
                         
+                        $('select').selectpicker('refresh');
                         $('#addiocbutton').attr('disabled','disabled');
                         document.getElementById('add_ioc_form').style='display: inherit';
                     } );
