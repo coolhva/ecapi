@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  ecapi:
+    image: "coolhva/ecapi:latest"
+    ports:
+      - "80:5000"
+    
