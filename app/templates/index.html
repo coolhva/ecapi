@@ -4,10 +4,270 @@
 {% block app_content %}
     <h1>Email.Cloud IOC API Management</h1>
     <p>This application allows you to manage indicators of compromise (IOC) in your Email.Cloud tenant.</p>
-    <div class="alert alert-warning" role="alert">This is a beta version, do not use on production environments (yet)!</div>
-    <p>how to activate it docker (recommended)</p>
-    <p>how to activate it locally (venv method)</p>
-    <p>explain the various options of the ui</p>
-    <p>explain the clientnet settings</p>
-    <p>explain recovery email, and how to configure</p>
+
+    <nav>
+        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Installation</a>
+          <a class="nav-item nav-link" id="nav-clientnet-tab" data-toggle="tab" href="#nav-clientnet" role="tab" aria-controls="nav-clientnet" aria-selected="false">Email.Cloud API user</a>
+          <a class="nav-item nav-link" id="nav-usage-tab" data-toggle="tab" href="#nav-usage" role="tab" aria-controls="nav-usage" aria-selected="false">Quick start</a>
+        </div>
+    </nav>
+    <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <p>There are two ways how you can run the ECAPI application:</p>
+            <ul>
+                <li>Build and run a docker container <strong>(recommended)</strong></li>
+                <li>Manually run app with python flask</li>
+            </ul>
+            <nav>
+                <div class="nav nav-tabs nav-fill" id="nav-tab-install" role="tablist">
+                  <a class="nav-item nav-link active" id="nav-docker-install-tab" data-toggle="tab" href="#nav-docker-install" role="tab" aria-controls="nav-docker-install" aria-selected="true">Docker</a>
+                  <a class="nav-item nav-link" id="nav-manual-install-tab" data-toggle="tab" href="#nav-manual-install" role="tab" aria-controls="nav-manual-install" aria-selected="false">Manual</a>
+                </div>
+            </nav>
+            <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent-install">
+                <div class="tab-pane fade show active" id="nav-docker-install" role="tabpanel" aria-labelledby="nav-docker-install-tab">
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">Prerequisites</h4>
+                        <hr />
+                        <p>Docker must be installed on the computer or server on which you will execute this procedure. This procedure can be executed on a desktop with Docker CE or on a linux server that is running Docker.
+                            Please find more information how to install docker at <a href="https://docs.docker.com/engine/install/" target="_blank">https://docs.docker.com/engine/install/</a>.
+                        </p>
+                    </div>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td><img src="/static/help_github_download_zip.png" class="float-right">
+                                <p>Visit the Github repository which holds the source code of Ecapi, click on the <strong>Code</strong> dropdown button and select <strong>Download ZIP</strong>.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td><p>Extract the ZIP file and open a command prompt in the directory that contains the extracted content from the ZIP file.</p></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td><p>Build the docker container with the following command:</p>
+                                    <p><code>docker build -t ecapi .</code><p></p>
+                                    <p>Docker starts building the container, running through all the steps and ends with the build tag, which should be <code>ecapi:latest</code>.</p>
+                                    <div class="highlight"><pre><samp>Step 1/20 : FROM python:3.8-alpine
+---> 5dbcd0ceee6a
+Step 2/20 : RUN adduser -D ecapi
+---> Running in c15148cf31cb
+Removing intermediate container c15148cf31cb
+---> 02218904be4b
+<...snip...>
+Step 20/20 : ENTRYPOINT ["./boot.sh"]
+---> Running in e18a87ca12a6
+Removing intermediate container e18a87ca12a6
+---> 50bed4c4d4ef
+Successfully built 50bed4c4d4ef
+Successfully tagged ecapi:latest</samp></pre></div>
+                                <p>Verify that the docker image is added to your local repository with the command:</p>
+                                    <p><code>docker image ls ecapi</code></p>
+<pre class="highlight"><samp>REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+ecapi        latest    50bed4c4d4ef   14 minutes ago   164MB</samp></pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">4</th>
+                                <td><p>Create a docker volume that will hold the database with the command:</p>
+                                    <p><code>docker volume create ecapi-db</code></p>
+                                    <p>Verifiy that the volume has been created with the following command:</p>
+                                    <p><code>docker volume ls -f name=ecapi-db</code></p>
+<pre class="highlight"><samp>DRIVER    VOLUME NAME
+local     ecapi-db</samp></pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">5</th>
+                                <td><p>Start the docker container with the following command:</p>
+                                    <p><code>docker run --name ecapi -d -p 8000:5000 -v ecapi-db:/home/ecapi/db ecapi</code></p>
+                                    <p>Verifiy that the container has been created with the following command:</p>
+                                    <p><code>docker ps</code></p>
+<pre class="highlight"><samp>CONTAINER ID   IMAGE     COMMAND       CREATED          STATUS          PORTS                    NAMES
+cc3abdbb4297   ecapi     "./boot.sh"   19 seconds ago   Up 18 seconds   0.0.0.0:8000->5000/tcp   ecapi</samp></pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">6</th>
+                                <td><p>Open a browser and connect to <code>https://localhost:8000/</code>. It should load the ECAPI web application.
+                                    Proceed to the login page where you can register your user account and start using the application. Be sure to create
+                                    a new Email.Cloud API user as outlined above.</p>
+                                    <img src="/static/help_docker_run.png">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">7</th>
+                                <td><p>From now on the docker container can be started (after a reboot for example) with this command: <code>docker start ecapi</code>.</p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="nav-manual-install" role="tabpanel" aria-labelledby="nav-manual-install-tab">
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">Prerequisites</h4>
+                        <hr />
+                        <p>Python 3.8 must be installed on the system you are executing this procedure.</p>
+                    </div>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td><img src="/static/help_github_download_zip.png" class="float-right">
+                                <p>Visit the Github repository which holds the source code of Ecapi, click on the <strong>Code</strong> dropdown button and select <strong>Download ZIP</strong>.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td><p>Extract the ZIP file and open a command prompt in the directory that contains the extracted content from the ZIP file.</p></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td><p>Create a new virtual environment with the following command:</p>
+                                    <p><code>python -m venv venv</code><p></p>
+                                    <p>Activate the virtual environment</p>
+                                    <p>
+                                        <ul>
+                                            <li>Linux: <code>source venv/bin/activate</code></li>
+                                            <li>Windows (CMD): <code>venv\Scripts\activate.bat</code></li>
+                                        </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">4</th>
+                                <td><p>Install the requirements with the following command:</p>
+                                    <p><code>pip install -r requirements.txt</code><p></p></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">5</th>
+                                <td><p>Create the database folder with following command:</p>
+                                    <p><code>mkdir db</code><p></p>
+                                    <p>and create the database with:</p>
+                                    <p><code>flask db upgrade</code><p></p>
+                            </tr>
+                            <tr>
+                                <th scope="row">6</th>
+                                <td><p>Run the app with the following command:</p>
+                                    <p><code>flask run</code><p></p>
+                                    <p>The application should now be accesible on <code>https://localhost:5000/</code></p>
+                            </tr>
+                        </tbody>
+                    </table>    
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="nav-clientnet" role="tabpanel" aria-labelledby="nav-clientnet-tab">
+          <p>To be able to connect to the IOC management API we need to supply an username and password with the correct privileges.
+              We recommend that you create a new user for the IOC API.
+          </p>
+              <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td><p>Log in with an Administrator at <a href="https://clients.messagelabs.com">https://clients.messagelabs.com</a>.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td><p>Hover over the user icon in the menu and select <code>User Management</code>.</p></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td><p>Click on the <code>Create new user</code> button.</p>
+                        <p>Select <code>Service account</code>.</p>
+                        <p>Enter a description, login name and email address. Make sure the user is enabled but disallow that this user can manage other users.</p>
+                        <p>Enter a password and click on the <code>User Roles</code> tab.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">4</th>
+                        <td><p>Click on the <code>Use standard role</code> button.</p>
+                            <p>Select <code>Service</code> and select the <code>IOC Blacklisting Service</code> and click on the <code>Add Role</code> button.</p>
+                            <p>Click on the <code>Save and Exit</code> button to store this new user with these permissions.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Make sure the IOC Blacklisting service is enabled.
+            </p>
+                <table class="table table-sm">
+                  <thead>
+                      <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Description</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <th scope="row">1</th>
+                          <td><p>Log in with an Administrator at <a href="https://clients.messagelabs.com">https://clients.messagelabs.com</a>.</p>
+                          </td>
+                      </tr>
+                      <tr>
+                          <th scope="row">2</th>
+                          <td><p>Hover over the services icon in the menu and select <code>Email Threat Detection and Response -> IOC Blacklist settings</code>.</p></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">3</th>
+                          <td><p>Make sure the service is enabled and all fields are populated.</p></td>
+                      </tr>
+                  </tbody>
+              </table>
+        </div>
+        <div class="tab-pane fade" id="nav-usage" role="tabpanel" aria-labelledby="nav-usage-tab">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td><p>Use the login option at the top right in the navigation bar to register your first user.</p>
+                            <p>Click on the <a href="/auth/register">Click to Register!</a> link to start the registration.</p>
+                            <p>Fill in all required fields and use the Register button to submit your registration.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Log in with your newly created user and, after a succesfull login you are redirected to the manage IOC page.</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td><p>Click on the <code>Show IOC's</code> button to retrieve all IOC's. If you receive an error please check the Email.Cloud configratuon and username and password.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">4</th>
+                        <td><p>You can now add IOC's manually through the Add IOC button or use the bulk upload function in the menu.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Additional information can be found in the API Guide (<a href="https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/email-security/email-security-cloud/generated-pdfs/Indicators-of-Compromise-(IOC)-Blacklist-API-Guide.pdf">PDF</a>).</p>
+        </div>
+    </div>
 {% endblock %}
