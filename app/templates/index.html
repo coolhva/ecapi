@@ -78,18 +78,14 @@ ecapi        latest    50bed4c4d4ef   14 minutes ago   164MB</samp></pre>
                             </tr>
                             <tr>
                                 <th scope="row">4</th>
-                                <td><p>Create a docker volume that will hold the database with the command:</p>
-                                    <p><code>docker volume create ecapi-db</code></p>
-                                    <p>Verifiy that the volume has been created with the following command:</p>
-                                    <p><code>docker volume ls -f name=ecapi-db</code></p>
-<pre class="highlight"><samp>DRIVER    VOLUME NAME
-local     ecapi-db</samp></pre>
+                                <td><p>Create a database folder that will hold the database with the command:</p>
+                                    <p><code>mkdir db</code></p>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">5</th>
                                 <td><p>Start the docker container with the following command:</p>
-                                    <p><code>docker run --name ecapi -d -p 8000:5000 -v ecapi-db:/home/ecapi/db ecapi</code></p>
+                                    <p><code>docker run --name ecapi -d -p 8000:5000 -v db:/home/ecapi/db ecapi</code></p>
                                     <p>Verifiy that the container has been created with the following command:</p>
                                     <p><code>docker ps</code></p>
 <pre class="highlight"><samp>CONTAINER ID   IMAGE     COMMAND       CREATED          STATUS          PORTS                    NAMES
