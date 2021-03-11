@@ -5,6 +5,8 @@
 # Email.Cloud IOC API Management
 This repo contains the source code for the Email.Cloud API (ECAPI) docker container. Email.Cloud allows the use of Indicators Of Compromise (IOC) to manage in- and outbound email based on given criteria.
 
+Please find the IOC API PDF Documentation [here](https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/email-security/email-security-cloud/generated-pdfs/Indicators-of-Compromise-(IOC)-Blacklist-API-Guide.pdf).
+
 ![main_interface](https://raw.githubusercontent.com/coolhva/ecapi/main/docs/ecapi_main.png)
 
 ## Running the docker container
